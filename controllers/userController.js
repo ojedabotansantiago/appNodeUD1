@@ -75,7 +75,7 @@ function loginUser(req, res) {
             if (params.gethash) {
               //devolber toquen jwt
             } else {
-              res.status(200).send({});
+              res.status(200).send({ user });
             }
           } else {
             res.status(404).send({ message: 'contraseña incorrecta' });
