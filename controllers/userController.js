@@ -95,11 +95,11 @@ function findUser(id, res) {
   User.findOne({ _id: id }, (err, user) => {
     if (err) {
       let message = 'error en la peticion';
-      return message;
+      res.status(500).send({ message: message });
     } else {
       if (!user) {
         let message = 'error en la peticion';
-        return message;
+        res.status(400).send({ message: message });
       } else {
         console.log('usuario: ' + user);
         res.status(200).send({ user: user });
