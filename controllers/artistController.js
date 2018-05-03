@@ -116,10 +116,48 @@ function updateARtist(req, res) {
         console.log(artistRemoved);
     })
  }
+
+function uploadedArtistImage(req, res) {
+    var artistId = req.params.id;
+    var file_name = 'no subido';
+
+    if (!req.files) {
+        res.status(200).send({message: 'no se ha subido nada'});
+    }
+    var file_path = req.files.imageFile.path;
+
+    var isImage = /([^\s]+(\.(gif|png|jpg)))/gm.test(file_path)?
+     true : res.status(403).send({ message: 'imagen incorrecta' });
+
+    var file_name = file_path.split('\/').pop();
+
+    Artist.findByIdAndUpdate(artistId, {image: file_name}, (err, userUpdated) => {
+        if (err) {
+            res.status(500).send({ message: 'error al actulaizar la imagen de usuario' });
+        } else if (!userUpdated) {
+            res.status(404).send({ message: 'no se a podido encontrar el usuario' });
+        } else {
+            findartist(artistId, res);
+        }
+    });    
+}
+
+
+ function getImageArtistFiles(req, res) {
+   var imageFile = req.params.imageFile;
+   var pathFile = './uploads/artist/' + imageFile;
+   console.log(imageFile);
+   fs.exists(pathFile, function (exist) {
+     exist ? res.sendFile(path.resolve(pathFile)) : res.status(200).send({message: 'no se ha encontrado la imagen'});
+  });
+ }
+
 module.exports = {
     getArtist,
     saveArtist,
     getArtists,
     updateARtist,
-    deleteARtist
+    deleteARtist,
+    uploadedArtistImage,
+    getImageArtistFiles
 }
