@@ -16,10 +16,5 @@ app.use(bodyParser.json());
 /* rutas base */
 app.use('/api', user_routes);
 
-/*
-app.get('/pruebas',function (req, res) {
-    res.status(200).send({message: 'Bien venido a mi primera api rest en node'})
-})
-*/
 
 module.exports = app;

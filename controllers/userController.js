@@ -1,10 +1,10 @@
 'use strict';
 
 var bcrypt = require('bcrypt-nodejs');
-
 var User = require('../models/user');
-
-var datoGuardado = require('../factories/control');
+var datoGuardado = require('../midelwares/authenticated');
+var jwt = require('../services/jwt');
+var Promise = require('bluebird');
 
 function pruebas(req, res) {
   res.status(200).send({
@@ -74,6 +74,9 @@ function loginUser(req, res) {
             //devolver los datros del usuario logead
             if (params.gethash) {
               //devolber toquen jwt
+              res.status(200).send({ 
+                token: jwt.createToken(user)
+               });
             } else {
               res.status(200).send({ user });
             }
@@ -85,8 +88,43 @@ function loginUser(req, res) {
     }
   });
 }
+function findUser(id, res) {
+  let _id = '_id';
+  User.findOne({ _id: id }, (err, user) => {
+    if (err) {
+      let message = 'error en la peticion';
+      return message;
+    } else {
+      if (!user) {
+        let message = 'error en la peticion';
+        return message;
+      } else {
+        console.log('usuario: ' + user);
+        res.status(200).send({ user: user });
+      }
+    }
+  });
+}
+
+function updateUser(req, res) {
+  var userId = req.params.id;
+  var update = req.body;
+
+  User.findByIdAndUpdate(userId,update,(err, userUpdated) => {
+    if (err) {
+      res.status(500).send({message: 'error al actulaizar el usuario'});
+    }
+    else if (!userUpdated) {
+      res.status(404).send({message: 'no se a podido actulaizar el usuario'});
+    }else {
+      findUser(userId, res);      
+    }
+  });
+}
+
 module.exports = {
   pruebas,
   saveUser,
-  loginUser
+  loginUser,
+  updateUser
 };
