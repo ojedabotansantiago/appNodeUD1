@@ -5,7 +5,8 @@ var User = require('../models/user');
 var datoGuardado = require('../midelwares/authenticated');
 var jwt = require('../services/jwt');
 var Promise = require('bluebird');
-
+var fs = require('fs');
+var path = require('path');
 function pruebas(req, res) {
   res.status(200).send({
     message:
@@ -143,21 +144,31 @@ function uploadImage(req,res) {
           findUser(userId, res);
         }
       });
-
-
-    /*var file_name = file_path.split('\/').pop();
+    /*
+    var file_name = file_path.split('\/').pop();
     console.log(file_path);
-    console.log(file_name);*/
+    console.log(file_name);
+    */
   }else{
     res.status(200).send({message: 'no se ha subido nada'});
   }
   
 }
 
+ function getImageFiles(req, res) {
+   var imageFile = req.params.imageFile;
+   var pathFile = './uploads/users/' + imageFile;
+   console.log(imageFile);
+   fs.exists(pathFile, function (exist) {
+     exist ? res.sendFile(path.resolve(pathFile)) : res.status(200).send({message: 'no se ha encontrado la imagen'});
+  });
+ }
+
 module.exports = {
   pruebas,
   saveUser,
   loginUser,
   updateUser,
-  uploadImage
+  uploadImage,
+  getImageFiles
 };
