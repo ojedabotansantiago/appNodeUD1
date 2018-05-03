@@ -8,8 +8,19 @@ var Song = require('../models/song');
 var mongoosePaginate = require('mongoose-pagination');
 
 function getAlbum(req,res) {
-    res.status(404).send({message: 'album'});
+    var albumId = req.params.id;
+
+    Album.findById(albumId).populate({path: 'artist'}).exec((err,album )=> {
+        if (err) {
+            res.status(500).send({message: 'error en sel servidor'});
+        }
+        if (!album) {
+            res.status(404).send({message: 'no existe el album'});
+        }
+        res.status(200).send({album: album});
+    })
 }
+
 function saveAlbum(req, res){
     var album = new Album();
     album.title = req.body.title;
