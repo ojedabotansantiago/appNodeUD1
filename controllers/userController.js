@@ -88,6 +88,7 @@ function loginUser(req, res) {
     }
   });
 }
+
 function findUser(id, res) {
   let _id = '_id';
   User.findOne({ _id: id }, (err, user) => {
@@ -122,9 +123,41 @@ function updateUser(req, res) {
   });
 }
 
+function uploadImage(req,res) {
+  var userId = req.params.id;
+  var file_name = 'no subido';
+  if (req.files) {
+    var file_path = req.files.image.path;
+
+    var isImage = /([^\s]+(\.(gif|png|jpg)))/gm.test(file_path)?
+     true : res.status(403).send({ message: 'imagen incorrecta' });
+
+    var file_name = file_path.split('\/').pop();
+
+    User.findByIdAndUpdate(userId, {image: file_name}, (err, userUpdated) => {
+        if (err) {
+          res.status(500).send({ message: 'error al actulaizar la imagen de usuario' });
+        } else if (!userUpdated) {
+          res.status(404).send({ message: 'no se a podido encontrar el usuario' });
+        } else {
+          findUser(userId, res);
+        }
+      });
+
+
+    /*var file_name = file_path.split('\/').pop();
+    console.log(file_path);
+    console.log(file_name);*/
+  }else{
+    res.status(200).send({message: 'no se ha subido nada'});
+  }
+  
+}
+
 module.exports = {
   pruebas,
   saveUser,
   loginUser,
-  updateUser
+  updateUser,
+  uploadImage
 };
